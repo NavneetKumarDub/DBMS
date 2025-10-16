@@ -83,7 +83,15 @@ select* from loan;
 select branch_name,assets/100000 as "assets in lakhs"
 from branches;
 
-create view as loan_amount as
+create view  loan_amount as
 select branch_name,sum(amount) as total_amount
 from loan
 group by branch_name;
+select * from loan_amount;
+
+
+select customer_name,count(*) acc_count from 
+depositer d inner join bankaccount b
+on d.accno = b.accno
+group by customer_name,branch_name
+having acc_count >= 2;
