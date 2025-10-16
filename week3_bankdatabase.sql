@@ -95,3 +95,9 @@ depositer d inner join bankaccount b
 on d.accno = b.accno
 group by customer_name,branch_name
 having acc_count >= 2;
+
+select distinct customer_name from depositer
+where accno in 
+(select accno from bankaccount where branch_name in
+(select branch_name from branch where branch_city = 'banglore'));
+
