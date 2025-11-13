@@ -1,0 +1,110 @@
+use mysql;
+create table supplier(
+	sid int primary key,
+    sname varchar(30),
+    city varchar(30)
+);
+create table parts(
+	pid int primary key,
+    pname varchar(30),
+    color varchar(30)
+);
+create table catalog(
+   sid int,
+     pid int,
+     cost float,
+    --  primary key(sid,pid),
+     foreign key (sid) references supplier(sid),
+     foreign key(pid) references parts(pid)
+);
+drop table supplier;
+drop table parts;
+drop table catalog;
+
+insert into supplier values
+(10001,"acme widget","banglore"),
+(10002,"johns","kolkata"),
+(10003,"vimal","mumbai"),
+(10004,"reliance","delhi");
+
+insert into parts values
+(20001,"book","red"),
+(20002,"pen","red"),
+(20003,"pencil","green"),
+(20004,"mobile","green"),
+(20005,"charger","black");
+
+insert into catalog values
+(10001,20001,10),
+(10001,20002,10),
+(10001,20003,30),
+(10001,20004,10),
+(10001,20005,10),
+(10002,20001,10),
+(10002,20002,20),
+(10003,20003,30),
+(10004,20003,40);
+
+select * from catalog;
+
+select distinct p.pname
+from parts p join catalog c 
+on p.pid = c.pid;
+
+select s.sname 
+from supplier s
+where not exists(
+	select 1
+    from parts p
+		where not exists(
+			select 1 
+            from catalog c
+             where c.sid = s.sid and c.pid = p.pid
+		)   
+);
+
+select s.sname from supplier s
+where exists(
+	select 1 
+    from parts p 
+	where  exists(
+		select 1 
+        from catalog c
+        where c.sid = s.sid and c.pid = p.pid and p.color = 'red'
+        )
+);
+
+select c.sid
+from catalog c join
+(select pid,avg(cost) avg_cost
+	from catalog
+    group by pid
+) avgCost
+on c.pid = avgCost.pid
+where c.cost>avgCost.avg_cost;
+
+select  s.sname,n.pid
+from supplier s join (
+	select c.sid,c.pid
+	from catalog c join
+	(select pid,max(cost) max_cost
+	from catalog c
+    group by c.pid
+    ) maximum
+		on c.pid = maximum.pid
+		where c.cost = maximum.max_cost
+    )n
+    on n.sid = s.sid;
+    
+    
+    
+   
+
+    
+
+
+
+
+
+
+
