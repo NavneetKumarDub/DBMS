@@ -1,0 +1,97 @@
+create database pharamacydb;
+use pharamacydb;
+create table pharmacist(
+	p_id int primary key,
+    p_name varchar(20),
+    license_no int,
+    qualification varchar(20),
+    contact_no int
+);
+create table supplier(
+	s_id int primary key,
+    s_name varchar(20),
+    address varchar(40),
+    gst_no int,
+    contact_no varchar(40),
+    p_id int,
+    foreign key(p_id) references pharmacist(p_id)
+);
+create table medicine(
+	m_id int primary key,
+    m_name varchar(30),
+    batch_no int,
+    brand varchar(30),
+    manufacturer varchar(30),
+    quantity int,
+    sell_price int,
+    expiry_date date,
+    s_id int,
+    foreign key(s_id) references supplier(s_id)
+);
+create table sales_transaction(
+	st_id int primary key,
+    total_amount int,
+    discount int,
+    payment_mode varchar(20),
+    st_date date,
+    m_id int,
+    foreign key(m_id) references medicine(m_id)
+);
+create table payment(
+	pay_id int primary key,
+    pay_status varchar(30),
+    pay_mode varchar(30),
+    pay_date date,
+    st_id int,
+    foreign key(st_id) references sales_transaction(st_id)
+);
+
+insert into pharmacist values
+(1,'krish',101,'q1',1234567890),
+(2,'sourav',102,'q2',1234467890),
+(3,'aditya',103,'q2',1234577890),
+(4,'sankalp',104,'q3',1244567890),
+(5,'piyush',105,'q1',1134567890);
+
+insert into supplier values
+(1101,'pradip','address1','1001','9911223344',1),
+(1102,'suman','address2','1002','9901223344',2),
+(1103,'adarsh','address3','1003','9711223344',3),
+(1104,'kaushal','address4','1004','8911223344',4),
+(1105,'navneet','address5','1005','9111223344',5);
+
+insert into medicine values
+(9901,'paracetamol',301,'branch1','manufacturer1',10,50,'2026-12-01',1101),
+(9902,'med2',3012,'branch2','manufacturer2',11,100,'2026-11-01',1102),
+(9903,'med3',303,'branch3','manufacturer3',9,60,'2026-12-09',1102),
+(9904,'med4',304,'branch4','manufacturer4',5,40,'2026-10-03',1103),
+(9905,'med5',305,'branch5','manufacturer5',12,30,'2026-02-01',1105);
+
+
+insert into sales_transaction values
+(801,500,10,'UPI','2025-11-01',9901),
+(802,1100,10,'cash','2025-10-01',9902),
+(803,540,10,'netbanking','2025-11-11',9903),
+(804,200,10,'debitcard','2025-10-12',9904),
+(805,360,10,'UPI','2025-11-16',9905);
+
+insert into payment values
+(991,'pending','UPI','2025-11-01',801),
+(992,'completed','cash','2025-11-01',802),
+(993,'pending','netbanking','2025-11-01',803),
+(994,'completed','debitcard','2025-11-01',804),
+(995,'pending','UPI','2025-11-01',805);
+
+select p.pay_id,p.pay_status,p.pay_mode,s.st_id,s.total_amount,s.discount,s.st_date,s.m_id from 
+payment p join sales_transaction s
+on p.st_id = s.st_id;
+
+update payment
+set pay_status = 'completed'
+where pay_status = 'pending';
+
+select * from payment;
+
+drop table payment;
+truncate sales_transaction;
+select * from sales_transaction;
